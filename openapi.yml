@@ -1,0 +1,156 @@
+openapi: 3.0.2
+info:
+  title: ''
+  version: ''
+paths:
+  /notes/:
+    get:
+      operationId: listNotes
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Note'
+          description: ''
+      tags:
+        - notes
+    post:
+      operationId: createNote
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Note'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Note'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
+      tags:
+        - notes
+  /notes/{id}/:
+    get:
+      operationId: retrieveNote
+      description: ''
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: A unique integer value identifying this note.
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
+      tags:
+        - notes
+    put:
+      operationId: updateNote
+      description: ''
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: A unique integer value identifying this note.
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Note'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Note'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
+      tags:
+        - notes
+    patch:
+      operationId: partialUpdateNote
+      description: ''
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: A unique integer value identifying this note.
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Note'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Note'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
+      tags:
+        - notes
+    delete:
+      operationId: destroyNote
+      description: ''
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: A unique integer value identifying this note.
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+        - notes
+components:
+  schemas:
+    Note:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        content:
+          type: string
+      required:
+        - title
+

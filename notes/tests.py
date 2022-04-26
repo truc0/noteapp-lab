@@ -66,13 +66,13 @@ class CreateNoteTestCase(TestCase):
         response = self.client.post('/notes/', expected_note)
         self.assertEqual(response.status_code, 201)
 
-        data = json.loads(response.content.decode())
+        data = response.json()
         self.assertEqual(expected_note['title'], data['title'])
         self.assertEqual(expected_note['content'], data['content'])
         self.assertTrue('id' in data.keys())
 
         pk = data['id']
-        self.assertTrue(Note.objects.exists(pk=pk))
+        self.assertTrue(Note.objects.filter(pk=pk).exists())
 
         note = Note.objects.get(pk=pk)
         self.assertEqual(expected_note['title'], note.title)
@@ -90,9 +90,13 @@ class ReadNoteTestCase(TestCase):
 
     def test_read_note(self):
         expected_response = json.dumps(serialize_note(self.note))
-        response = self.client.get('/notes/' + self.note.id)
+        response = self.client.get('/notes/' + str(self.note.id))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode(), expected_response)
+
+        data = response.json()
+        serialized = serialize_note(self.note)
+        for field in serialized.keys():
+            self.assertEqual(data[field], serialized[field])
 
 
 class UpdateNoteTestCase(TestCase):
@@ -104,18 +108,21 @@ class UpdateNoteTestCase(TestCase):
         self.notes = generate_notes()
         self.note = self.notes[0]
 
-    def test_read_note(self):
+    def test_update_note(self):
         patch_info = {
             'title': ' '.join(faker.words(5)),
             'content': '\n'.join(faker.paragraphs(5))
         }
-        response = self.client.patch('/notes/' + self.note.id, patch_info)
+        serialized_request = json.dumps(patch_info)
+        response = self.client.patch('/notes/' + str(self.note.id), serialized_request)
         self.assertEqual(response.status_code, 200)
 
         patch_info['id'] = self.note.id
-        self.assertEqual(response.content.decode(), json.dumps(patch_info))
+        data = response.json()
+        for field in patch_info.keys():
+            self.assertEqual(data[field], patch_info[field])
 
-        note = Note.objects.get(pk=pk)
+        note = Note.objects.get(pk=self.note.id)
         self.assertEqual(note.title, patch_info['title'])
         self.assertEqual(note.content, patch_info['content'])
 
@@ -129,8 +136,8 @@ class DeleteNoteTestCase(TestCase):
         self.notes = generate_notes()
         self.note = self.notes[0]
 
-    def test_read_note(self):
-        response = self.client.delete('/notes/' + self.note.id)
+    def test_delete_note(self):
+        response = self.client.delete('/notes/' + str(self.note.id))
         self.assertEqual(response.status_code, 204)
-        self.assertFalse(Note.objects.exists(pk=self.note.id))
+        self.assertFalse(Note.objects.filter(pk=self.note.id).exists())
 
